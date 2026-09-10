@@ -1,0 +1,38 @@
+# Produção no ZimaOS — imagem local, sem registry (mesmo padrão do LunaSpeak / wallet-app).
+# Deploy: via scripts/deploy-manual.sh (do host).
+# O compose é copiado para APP_DIR (…/casaos/apps/agathawhisper) com o .env de prod ao lado.
+services:
+  agathawhisper:
+    build: .
+    image: agathawhisper:latest
+    pull_policy: never
+    container_name: agathawhisper
+    ports:
+      - "8094:8080"           # 8093 é do LunaSpeak; AgathaWhisper na 8094
+    env_file: .env
+    environment:
+      MODEL_DIR: /models      # cache do modelo whisper, persistente
+    volumes:
+      - agathawhisper_models:/models
+    restart: unless-stopped
+
+volumes:
+  agathawhisper_models:
+
+# x-casaos é chave TOP-LEVEL do compose (o CasaOS lê aqui, não dentro do serviço).
+x-casaos:
+  architecture:
+    - amd64
+  main: agathawhisper
+  scheme: http
+  port_map: "8094"
+  index: /health
+  is_uncontrolled: false
+  store_app_id: agathawhisper
+  title:
+    custom: AgathaWhisper
+  tagline:
+    custom: Transcrição de áudio (STT) do homelab
+  description:
+    custom: Microserviço STT com faster-whisper (CPU). Recebe áudio, devolve texto.
+  category: Utilities

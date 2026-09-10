@@ -1,0 +1,16 @@
+# Ambiente de DEV (porta 8034) — não usado em prod (prod é o docker-compose-zimaos.yml).
+services:
+  agathawhisper:
+    build: .
+    image: agathawhisper:dev
+    ports:
+      - "8034:8080"
+    environment:
+      WHISPER_MODEL: small
+      WHISPER_DEVICE: cpu
+      WHISPER_COMPUTE_TYPE: int8
+      WHISPER_LANGUAGE: pt
+      MODEL_DIR: /models
+      LOG_LEVEL: INFO
+    volumes:
+      - ./.models:/models
