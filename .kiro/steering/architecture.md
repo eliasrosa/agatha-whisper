@@ -63,6 +63,9 @@ estados sem efeito colateral (não força o load).
 
 - **Stateless.** O serviço não guarda sessão nem histórico. Cada `/transcribe` é
   independente. O único "estado" é o modelo em cache no volume (otimização, não dado).
+  Consequência prática: **uma única instância atende vários clientes/contas** sem
+  configuração "por conta" — não há token nem canal aqui pra separar. A separação por
+  conta (quando existe) vive na camada de entrega/saída (ex. o TTS), não no STT.
 - **Sem gate/normalização** (diferente do LunaSpeak, que tem o Voice Gate): o STT só
   transcreve; decidir o que fazer com o texto é do chamador.
 - **Sem credencial.** AgathaWhisper não fala com o Telegram nem tem token — recebe
