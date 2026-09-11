@@ -50,6 +50,13 @@ docker compose -f docker-compose-zimaos.yml up -d --build --force-recreate
 ## Notas
 
 - `ffmpeg` está na imagem (decodifica ogg/opus/mp3/m4a antes de transcrever).
-- Latência depende do modelo e do áudio: `small`/CPU transcreve ~poucos segundos de fala
-  em ~1-2s. Modelos maiores (`large-v3-turbo`) são mais precisos e mais lentos.
+- Latência depende do modelo, do áudio e do hardware. Medido em prod (ZimaOS, CPU
+  compartilhada, áudio ~4-5s de fala): **cold start** ~68s com `large-v3-turbo` (dominado
+  pelo download do modelo ~1.6 GB, uma vez só); **warm** ~12s por transcrição (modelo em
+  cache). Adequado a uso **assíncrono** (manda áudio → recebe texto), não a tempo real em CPU.
+- **GPU**: rodar em CUDA (`WHISPER_DEVICE=cuda`, `WHISPER_COMPUTE_TYPE=float16`) derruba a
+  latência para ~1-3s, mas exige imagem com libs CUDA/cuDNN e runtime `nvidia` no Docker.
+  Em VRAM pequena (≤2 GB), preferir um modelo menor (`small`/`base`/`distil`) — o
+  `large-v3-turbo` fica no limite.
 - Repo pensado para ser **público** — sem IP/host/token no versionado (placeholders `<HOST>`).
+  O serviço **não tem credencial** (só recebe áudio e devolve texto).
